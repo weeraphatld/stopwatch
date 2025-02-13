@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch Online</title>
+    <script>
+        let timer;
+        let seconds = 0;
+        let running = false;
+        const socket = new WebSocket("wss://your-websocket-server.up.railway.app");
+
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.command === "start") startStopwatch();
+            else if (data.command === "stop") stopStopwatch();
+            else if (data.command === "reset") resetStopwatch();
+        };
+
+        function updateDisplay() {
+            document.getElementById("display").innerText = new Date(seconds * 1000).toISOString().substr(11, 8);
+        }
+
+        function startStopwatch() {
+            if (!running) {
+                running = true;
+                timer = setInterval(() => {
+                    seconds++;
+                    updateDisplay();
+                }, 1000);
+            }
+        }
+
+        function stopStopwatch() {
+            running = false;
+            clearInterval(timer);
+        }
+
+        function resetStopwatch() {
+            stopStopwatch();
+            seconds = 0;
+            updateDisplay();
+        }
+
+        function sendCommand(command) {
+            socket.send(JSON.stringify({ command }));
+        }
+    </script>
+</head>
+<body>
+    <h1>Stopwatch</h1>
+    <h2 id="display">00:00:00</h2>
+    <button onclick="sendCommand('start')">Start</button>
+    <button onclick="sendCommand('stop')">Stop</button>
+    <button onclick="sendCommand('reset')">Reset</button>
+</body>
+</html>
