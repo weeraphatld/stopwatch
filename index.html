@@ -8,7 +8,7 @@
         let timer;
         let seconds = 0;
         let running = false;
-        const socket = new WebSocket("wss://your-websocket-server.up.railway.app");
+        const socket = new WebSocket("wss://ad8c404b-1241-4819-8dd2-43faec3b8705.up.railway.app");
 
         socket.onmessage = function(event) {
             const data = JSON.parse(event.data);
